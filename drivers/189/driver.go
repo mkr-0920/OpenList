@@ -3,6 +3,7 @@ package _189
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/OpenListTeam/OpenList/v4/drivers/base"
@@ -19,6 +20,8 @@ type Cloud189 struct {
 	client     *resty.Client
 	rsa        Rsa
 	sessionKey string
+	downloadThread int
+	downloadPartSize int
 }
 
 func (d *Cloud189) Config() driver.Config {
@@ -30,6 +33,16 @@ func (d *Cloud189) GetAddition() driver.Additional {
 }
 
 func (d *Cloud189) Init(ctx context.Context) error {
+	// 限制下载线程数
+	d.downloadThread, _ = strconv.Atoi(d.DownloadThread)
+	if d.downloadThread < 1 || d.downloadThread > 128 {
+		d.downloadThread, d.DownloadThread = 32, "32"
+	}
+	// 限制分片大小
+	d.downloadPartSize, _ = strconv.Atoi(d.DownloadPartSize)
+	if d.downloadPartSize < 1 || d.downloadPartSize > 64 {
+		d.downloadPartSize, d.DownloadPartSize = 16, "16"
+	}
 	d.client = base.NewRestyClient().
 		SetHeader("Referer", "https://cloud.189.cn/")
 	return d.newLogin()
@@ -76,6 +89,8 @@ func (d *Cloud189) Link(ctx context.Context, file model.Obj, args model.LinkArgs
 		link.URL = resp.FileDownloadUrl
 	}
 	link.URL = strings.Replace(link.URL, "http://", "https://", 1)
+	link.Concurrency = d.downloadThread
+	link.PartSize = d.downloadPartSize * 1024 * 1024
 	return &link, nil
 }
 

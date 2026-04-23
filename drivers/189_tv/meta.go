@@ -13,6 +13,8 @@ type Addition struct {
 	Type           string `json:"type" type:"select" options:"personal,family" default:"personal"`
 	FamilyID       string `json:"family_id"`
 	UploadThread   string `json:"upload_thread" default:"3" help:"1<=thread<=32"`
+	DownloadThread string `json:"download_thread" default:"32" help:"1<=thread<=128"`
+	DownloadPartSize string `json:"download_part_size" default:"16" help:"Part size in MB, 1<=size<=64"`
 	RapidUpload    bool   `json:"rapid_upload"`
 }
 

@@ -21,6 +21,8 @@ type Cloud189TV struct {
 	client        *resty.Client
 	tokenInfo     *AppSessionResp
 	uploadThread  int
+	downloadThread int
+	downloadPartSize int
 	storageConfig driver.Config
 
 	TempUuid string
@@ -54,6 +56,17 @@ func (y *Cloud189TV) Init(ctx context.Context) (err error) {
 	y.uploadThread, _ = strconv.Atoi(y.UploadThread)
 	if y.uploadThread < 1 || y.uploadThread > 32 {
 		y.uploadThread, y.UploadThread = 3, "3"
+	}
+
+	// 限制下载线程数
+	y.downloadThread, _ = strconv.Atoi(y.DownloadThread)
+	if y.downloadThread < 1 || y.downloadThread > 128 {
+		y.downloadThread, y.DownloadThread = 32, "32"
+	}
+	// 限制分片大小
+	y.downloadPartSize, _ = strconv.Atoi(y.DownloadPartSize)
+	if y.downloadPartSize < 1 || y.downloadPartSize > 64 {
+		y.downloadPartSize, y.DownloadPartSize = 16, "16"
 	}
 
 	// 初始化请求客户端
@@ -144,6 +157,8 @@ func (y *Cloud189TV) Link(ctx context.Context, file model.Obj, args model.LinkAr
 		Header: http.Header{
 			"User-Agent": []string{base.UserAgent},
 		},
+		Concurrency: y.downloadThread,
+		PartSize:    y.downloadPartSize * 1024 * 1024,
 	}
 
 	return like, nil

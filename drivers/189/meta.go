@@ -9,6 +9,8 @@ type Addition struct {
 	Username string `json:"username" required:"true"`
 	Password string `json:"password" required:"true"`
 	Cookie   string `json:"cookie" help:"Fill in the cookie if need captcha"`
+	DownloadThread string `json:"download_thread" default:"32" help:"1<=thread<=128"`
+	DownloadPartSize string `json:"download_part_size" default:"16" help:"Part size in MB, 1<=size<=64"`
 	driver.RootID
 }
 
