@@ -112,7 +112,8 @@ Thank you for your support and understanding of the OpenList project.
 - [x] Web upload(Can allow visitors to upload), delete, mkdir, rename, move and copy
 - [x] Offline download
 - [x] Copy files between two storage
-- [x] Multi-thread downloading acceleration for single-thread download/stream
+- [x] Multi-thread downloading acceleration (Support 32/64 threads for 189cloud, fix Blu-ray playback lag)
+- [x] Deep integration for Mobile (Android/iOS), support multi-thread stream acceleration on phone
 
 ## Document
 
