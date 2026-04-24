@@ -6,6 +6,7 @@ import (
 	"hash"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/OpenListTeam/OpenList/v4/drivers/base"
@@ -23,6 +24,8 @@ type QuarkOrUC struct {
 	Addition
 	config driver.Config
 	conf   Conf
+	downloadThread   int
+	downloadPartSize int
 }
 
 func (d *QuarkOrUC) Config() driver.Config {
@@ -34,6 +37,15 @@ func (d *QuarkOrUC) GetAddition() driver.Additional {
 }
 
 func (d *QuarkOrUC) Init(ctx context.Context) error {
+	d.downloadThread, _ = strconv.Atoi(d.DownloadThread)
+	if d.downloadThread < 1 || d.downloadThread > 32 {
+		d.downloadThread, d.DownloadThread = 3, "3"
+	}
+	d.downloadPartSize, _ = strconv.Atoi(d.DownloadPartSize)
+	if d.downloadPartSize < 1 || d.downloadPartSize > 64 {
+		d.downloadPartSize, d.DownloadPartSize = 10, "10"
+	}
+
 	_, err := d.request("/config", http.MethodGet, nil, nil)
 	if err == nil {
 		if d.AdditionVersion != 2 {

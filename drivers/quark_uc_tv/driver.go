@@ -22,6 +22,8 @@ type QuarkUCTV struct {
 	Addition
 	config driver.Config
 	conf   Conf
+	downloadThread   int
+	downloadPartSize int
 }
 
 func (d *QuarkUCTV) Config() driver.Config {
@@ -33,6 +35,14 @@ func (d *QuarkUCTV) GetAddition() driver.Additional {
 }
 
 func (d *QuarkUCTV) Init(ctx context.Context) error {
+	d.downloadThread, _ = strconv.Atoi(d.DownloadThread)
+	if d.downloadThread < 1 || d.downloadThread > 32 {
+		d.downloadThread, d.DownloadThread = 3, "3"
+	}
+	d.downloadPartSize, _ = strconv.Atoi(d.DownloadPartSize)
+	if d.downloadPartSize < 1 || d.downloadPartSize > 64 {
+		d.downloadPartSize, d.DownloadPartSize = 10, "10"
+	}
 
 	if d.Addition.DeviceID == "" {
 		d.Addition.DeviceID = utils.GetMD5EncodeStr(time.Now().String())

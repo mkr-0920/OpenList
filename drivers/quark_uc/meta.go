@@ -12,6 +12,8 @@ type Addition struct {
 	OrderDirection        string `json:"order_direction" type:"select" options:"asc,desc" default:"asc"`
 	UseTransCodingAddress bool   `json:"use_transcoding_address" help:"You can watch the transcoded video and support 302 redirection" required:"true" default:"false"`
 	OnlyListVideoFile     bool   `json:"only_list_video_file" default:"false"`
+	DownloadThread        string `json:"download_thread" default:"3" help:"1<=thread<=32"`
+	DownloadPartSize      string `json:"download_part_size" default:"10" help:"Part size in MB, 1<=size<=64"`
 	AdditionVersion       int
 }
 

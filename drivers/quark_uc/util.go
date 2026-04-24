@@ -131,8 +131,8 @@ func (d *QuarkOrUC) getDownloadLink(file model.Obj) (*model.Link, error) {
 			"Referer":    []string{d.conf.referer},
 			"User-Agent": []string{ua},
 		},
-		Concurrency: 3,
-		PartSize:    10 * utils.MB,
+		Concurrency: d.downloadThread,
+		PartSize:    d.downloadPartSize * utils.MB,
 	}, nil
 }
 

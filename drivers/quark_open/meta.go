@@ -15,6 +15,8 @@ type Addition struct {
 	RefreshToken   string `json:"refresh_token" required:"true"`
 	AppID          string `json:"app_id" required:"true" help:"Keep it empty if you don't have one"`
 	SignKey        string `json:"sign_key" required:"true" help:"Keep it empty if you don't have one"`
+	DownloadThread        string `json:"download_thread" default:"3" help:"1<=thread<=32"`
+	DownloadPartSize      string `json:"download_part_size" default:"10" help:"Part size in MB, 1<=size<=64"`
 }
 
 type Conf struct {

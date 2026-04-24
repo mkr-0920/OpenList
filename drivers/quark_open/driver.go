@@ -8,6 +8,7 @@ import (
 	"hash"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/OpenListTeam/OpenList/v4/drivers/base"
@@ -25,6 +26,8 @@ type QuarkOpen struct {
 	Addition
 	config driver.Config
 	conf   Conf
+	downloadThread   int
+	downloadPartSize int
 }
 
 func (d *QuarkOpen) Config() driver.Config {
@@ -36,6 +39,15 @@ func (d *QuarkOpen) GetAddition() driver.Additional {
 }
 
 func (d *QuarkOpen) Init(ctx context.Context) error {
+	d.downloadThread, _ = strconv.Atoi(d.DownloadThread)
+	if d.downloadThread < 1 || d.downloadThread > 32 {
+		d.downloadThread, d.DownloadThread = 3, "3"
+	}
+	d.downloadPartSize, _ = strconv.Atoi(d.DownloadPartSize)
+	if d.downloadPartSize < 1 || d.downloadPartSize > 64 {
+		d.downloadPartSize, d.DownloadPartSize = 10, "10"
+	}
+
 	var resp UserInfoResp
 
 	_, err := d.request(ctx, "/open/v1/user/info", http.MethodGet, nil, &resp)
@@ -83,8 +95,8 @@ func (d *QuarkOpen) Link(ctx context.Context, file model.Obj, args model.LinkArg
 		Header: http.Header{
 			"Cookie": []string{d.generateAuthCookie()},
 		},
-		Concurrency: 3,
-		PartSize:    10 * utils.MB,
+		Concurrency: d.downloadThread,
+		PartSize:    d.downloadPartSize * utils.MB,
 	}, nil
 }
 

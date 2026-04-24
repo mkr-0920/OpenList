@@ -242,8 +242,8 @@ func (d *QuarkUCTV) getTranscodingLink(ctx context.Context, file model.Obj) (*mo
 			return &model.Link{
 				URL:           info.URL,
 				ContentLength: info.Size,
-				Concurrency:   3,
-				PartSize:      10 * utils.MB,
+				Concurrency:   d.downloadThread,
+				PartSize:      d.downloadPartSize * utils.MB,
 			}, nil
 		}
 	}
@@ -268,7 +268,7 @@ func (d *QuarkUCTV) getDownloadLink(ctx context.Context, file model.Obj) (*model
 
 	return &model.Link{
 		URL:         fileLink.Data.DownloadURL,
-		Concurrency: 3,
-		PartSize:    10 * utils.MB,
+		Concurrency: d.downloadThread,
+		PartSize:    d.downloadPartSize * utils.MB,
 	}, nil
 }
